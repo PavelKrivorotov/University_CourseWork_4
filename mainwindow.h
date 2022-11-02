@@ -10,6 +10,7 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
+class BaseAnimation;
 class GraphicBinaryTree;
 class GetItemAnimation;
 class AlgorithmAnimation;
@@ -35,6 +36,7 @@ private:
 
     GraphicBinaryTree *_graphicBinaryTree;
 
+    BaseAnimation *_baseAnimation;
     GetItemAnimation *_getItemAnimation;
     AlgorithmAnimation *_algorithmAnimation;
     DifferenceHeightAnimation *_differenceHeightAnimation;

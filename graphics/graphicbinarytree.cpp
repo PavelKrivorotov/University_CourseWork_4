@@ -1,9 +1,8 @@
 #include "graphicbinarytree.h"
 #include "mainwindow.h"
 
-#include <QGraphicsScene>
 
-GraphicBinaryTree::GraphicBinaryTree(MainWindow *parent) {
+GraphicBinaryTree::GraphicBinaryTree() {
     _root = nullptr;
 
     _rootCoordX0 = 0;
@@ -11,8 +10,6 @@ GraphicBinaryTree::GraphicBinaryTree(MainWindow *parent) {
 
     _startAngle = 15;
     _startLengthLine = 256;
-
-    _currentScene = parent->getScene();
 }
 
 
@@ -262,16 +259,5 @@ void GraphicBinaryTree::deleteGraphBinaryTree(GraphicNode *currentGraphicNode) {
     qDebug() << currentGraphicNode->getValue() << "\n";
 
     delete currentGraphicNode;
-}
-
-
-void GraphicBinaryTree::render(GraphicNode *currentGraphicNode) {
-    if (!currentGraphicNode) { return; }
-
-    _currentScene->addItem(currentGraphicNode);
-    _currentScene->update();
-
-    render(currentGraphicNode->getLeftChild());
-    render(currentGraphicNode->getRightChild());
 }
 

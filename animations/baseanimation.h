@@ -1,10 +1,15 @@
 #ifndef BASEANIMATION_H
 #define BASEANIMATION_H
 
-#include "graphics/graphicbinarytree.h"
+#include <QObject>
+#include <QGraphicsScene>
+
+class MainWindow;
+class GraphicBinaryTree;
+class GraphicNode;
 
 
-class BaseAnimation: public GraphicBinaryTree {
+class BaseAnimation: public QObject {
     Q_OBJECT
 
 public:
@@ -16,8 +21,17 @@ public:
 protected:
     void setRoot(GraphicBinaryTree *graphicBinaryTree);
 
+    void renderTree(GraphicNode *currentGraphicNode);
+
 protected:
+    GraphicNode *_root;
+
     GraphicBinaryTree *_graphicBinaryTree;
+
+    QGraphicsScene *_currentScene;
+
+public slots:
+    void showTree();
 };
 
 #endif // BASEANIMATION_H

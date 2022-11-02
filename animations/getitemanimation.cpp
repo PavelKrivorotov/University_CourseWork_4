@@ -1,6 +1,9 @@
 #include "getitemanimation.h"
 
 #include "mainwindow.h"
+#include "graphics/graphicnode.h"
+
+#include <QTimer>
 
 GetItemAnimation::GetItemAnimation(MainWindow *parent, GraphicBinaryTree *graphicBinaryTree):
     BaseAnimation(parent, graphicBinaryTree) {

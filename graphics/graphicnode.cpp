@@ -50,7 +50,7 @@ QRectF GraphicNode::boundingRect() const {
 void GraphicNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
 //    if (_parent && _balanceCoordinate) { makeBalanceCoordinate(); }
 
-    painter->setPen(QPen(QBrush(QColor(0, 0, 0)), 2));
+    painter->setPen(QPen(QBrush(QColor(0, 0, 0)), _radius / 10));
     painter->setFont(QFont("Helvetica", _radius / 1.25));
     painter->setBrush(_brushColor);
 
@@ -134,16 +134,6 @@ void GraphicNode::setBrush(QBrush brushColor) {
 void GraphicNode::setLeftChild(GraphicNode *newLeftChild, bool defaultLineLength, bool defaultAngle) {
     _leftChild = newLeftChild;
 
-//    if (defaultLineLength) { setDefaultLineLength(); }
-//    if (defaultAngle) { setDefaultAngle(); }
-
-
-//    if (newLeftChild) {
-//        if (defaultLineLength) { _leftChild->setDefaultLineLength(); }
-//        if (defaultAngle) { _leftChild->setDefaultAngle(); }
-//    }
-
-
     if (newLeftChild) {
         if (defaultLineLength) { _leftChild->setLengthLine(_lengthLine / 2); }
         if (defaultAngle) { _leftChild->setAngle(_angle + 15); }
@@ -153,16 +143,6 @@ void GraphicNode::setLeftChild(GraphicNode *newLeftChild, bool defaultLineLength
 
 void GraphicNode::setRightChild(GraphicNode *newRightChild, bool defaultLineLength, bool defaultAngle) {
     _rightChild = newRightChild;
-
-//    if (defaultLineLength) { setDefaultLineLength(); }
-//    if (defaultAngle) { setDefaultAngle(); }
-
-
-//    if (newRightChild) {
-//        if (defaultLineLength) { _rightChild->setDefaultLineLength(); }
-//        if (defaultAngle) { _rightChild->setDefaultAngle(); }
-//    }
-
 
     if (newRightChild) {
         if (defaultLineLength) { _rightChild->setLengthLine(_lengthLine / 2); }

@@ -1,6 +1,9 @@
 #include "differenceheightanimation.h"
 
 #include "mainwindow.h"
+#include "graphics/graphicbinarytree.h"
+
+#include <QTimer>
 
 DifferenceHeightAnimation::DifferenceHeightAnimation(MainWindow *parent, GraphicBinaryTree *graphicBinaryTree):
     BaseAnimation(parent, graphicBinaryTree) {
@@ -85,12 +88,16 @@ void DifferenceHeightAnimation::setTimerUpdate(int milliSeconds) {
 
 
 void DifferenceHeightAnimation::setDefaultMinimalIndex() {
-    _minimalIndex = minimalIndex(_startGraphicNode);
+//    _minimalIndex = minimalIndex(_startGraphicNode);
+
+    _minimalIndex = _graphicBinaryTree->minimalIndex(_startGraphicNode);
 }
 
 
 void DifferenceHeightAnimation::setDefaultMaximalIndex() {
-    _maximalIndex = maximalIndex(_startGraphicNode);
+//    _maximalIndex = maximalIndex(_startGraphicNode);
+
+    _maximalIndex = _graphicBinaryTree->maximalIndex(_startGraphicNode);
 }
 
 

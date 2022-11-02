@@ -3,15 +3,11 @@
 
 #include "graphics/graphicnode.h"
 
-#include <QTimer>
+class GraphicBinaryTree {
 
-class MainWindow;
-
-class GraphicBinaryTree: public QObject {
-    Q_OBJECT
 
 public:
-    explicit GraphicBinaryTree(MainWindow *parent = nullptr);
+    explicit GraphicBinaryTree();
     ~GraphicBinaryTree();
 
     GraphicNode * get(int value);
@@ -48,26 +44,23 @@ public:
 
     void setStartLengthLine(double newLengthLine);
 
-private:
-    void deleteGraphBinaryTree(GraphicNode *currentGraphicNode);
 
-protected:
     void balanceHeight(GraphicNode *currentGraphicNode);
 
 private:
+    void deleteGraphBinaryTree(GraphicNode *currentGraphicNode);
+
+//protected:
+//    void balanceHeight(GraphicNode *currentGraphicNode);
+
+private:
+    GraphicNode *_root;
+
     int _rootCoordX0;
     int _rootCoordY0;
 
     double _startAngle;
     double _startLengthLine;
-
-protected:
-    GraphicNode *_root;
-
-    QGraphicsScene *_currentScene;
-
-public slots:
-    void render(GraphicNode *currentGraphicNode);
 };
 
 #endif // GRAPHICBINARYTREE_H

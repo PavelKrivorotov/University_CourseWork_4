@@ -1,6 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include "graphics/graphicbinarytree.h"
+
+#include "animations/baseanimation.h"
 #include "animations/getitemanimation.h"
 #include "animations/algorithmanimation.h"
 #include "animations/differenceheightanimation.h"
@@ -17,7 +20,8 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     _scene = new QGraphicsScene(parent);
     ui->graphicView->setScene(_scene);
 
-    _graphicBinaryTree = new GraphicBinaryTree(this);
+
+    _graphicBinaryTree = new GraphicBinaryTree();
 
     _graphicBinaryTree->add(0);
     _graphicBinaryTree->add(-9);
@@ -36,6 +40,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     _graphicBinaryTree->add(-7);
 
 
+    _baseAnimation = new BaseAnimation(this, _graphicBinaryTree);
     _getItemAnimation = new GetItemAnimation(this, _graphicBinaryTree);
     _algorithmAnimation = new AlgorithmAnimation(this, _graphicBinaryTree);
     _differenceHeightAnimation = new DifferenceHeightAnimation(this, _graphicBinaryTree);
@@ -103,6 +108,6 @@ void MainWindow::showAlgorithm() {
 
 
 void MainWindow::showTree() {
-    _graphicBinaryTree->render(_graphicBinaryTree->getRoot());
+    _baseAnimation->showTree();
 }
 

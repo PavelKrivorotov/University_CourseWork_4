@@ -1,6 +1,9 @@
 #include "algorithmanimation.h"
 
 #include "mainwindow.h"
+#include "graphics/graphicnode.h"
+
+#include <QTimer>
 
 AlgorithmAnimation::AlgorithmAnimation(MainWindow *parent, GraphicBinaryTree *graphicBinaryTree):
     BaseAnimation(parent, graphicBinaryTree) {

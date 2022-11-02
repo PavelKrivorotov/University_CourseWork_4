@@ -1,6 +1,9 @@
 #include "balancetreeanimation.h"
 
 #include "mainwindow.h"
+#include "graphics/graphicbinarytree.h"
+
+#include <QTimer>
 
 BalanceTreeAnimation::BalanceTreeAnimation(MainWindow *parent, GraphicBinaryTree *graphicBinaryTree):
     DifferenceHeightAnimation(parent, graphicBinaryTree) {
@@ -71,12 +74,16 @@ void BalanceTreeAnimation::setTimerUpUpdate(int milliSeconds) {
 
 
 void BalanceTreeAnimation::setDefaultMinimalCoordY0() {
-    _minimalCoordY0 = minimalCoordY0(_startGraphicNode);
+//    _minimalCoordY0 = minimalCoordY0(_startGraphicNode);
+
+    _minimalCoordY0 = _graphicBinaryTree->minimalCoordY0(_startGraphicNode);
 }
 
 
 void BalanceTreeAnimation::setDefaultMaximalCoordY0() {
-    _maximalCoordY0 = maximalCoordY0(_startGraphicNode);
+//    _maximalCoordY0 = maximalCoordY0(_startGraphicNode);
+
+    _maximalCoordY0 = _graphicBinaryTree->maximalCoordY0(_startGraphicNode);
 }
 
 
@@ -248,7 +255,9 @@ void BalanceTreeAnimation::rebuildGraphicTree(int state, GraphicNode *parentGrap
 
     currentGraphicNode->setCoordY0(_maximalCoordY0);
 
-    balanceHeight(currentGraphicNode);
+//    balanceHeight(currentGraphicNode);
+
+    _graphicBinaryTree->balanceHeight(currentGraphicNode);
 
 
 //    qDebug() << "Index =" << currentIndex << ". Current Node:" << currentGraphicNode->getValue()
