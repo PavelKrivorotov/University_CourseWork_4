@@ -29,19 +29,20 @@ private:
     void setDefaultMaximalIndex();
 
 protected:
-    void setRoot(GraphicBinaryTree *graphicBinaryTree);
-
     void buildListDifferenceHeightAnimation(GraphicNode *currentGraphicNode);
 
     void renderDifferenceHeightAnimation();
 
 private:
+    GraphicNode *_startGraphicNode;
+
     int _minimalIndex;
     int _maximalIndex;
 
     int _currentIndexDifferenceHeightAnimation;
     QList<GraphicNode*> *_listDifferenceHeightAnimation;
 
+    QBrush _brushStartGraphicNode;
     QBrush _brushPreviousGraphicNode;
     QBrush _brushHighLevelNode;
     QBrush _brushMiddleLevelNode;
@@ -50,14 +51,11 @@ private:
     int _timerUpdate;
     QTimer *_timer;
 
-protected:
-    GraphicNode *_startGraphicNode;
-
 public slots:
     virtual void show();
 
 signals:
-    void completeDifferenceHeightAnimation();
+    void completeDifferenceHeightAnimation(bool makeBalance);
 };
 
 #endif // DIFFERENCEHEIGHTANIMATION_H

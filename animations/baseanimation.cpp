@@ -6,8 +6,6 @@
 BaseAnimation::BaseAnimation(MainWindow *parent, GraphicBinaryTree *graphicBinaryTree) {
     _graphicBinaryTree = graphicBinaryTree;
 
-    setRoot(_graphicBinaryTree);
-
     _currentScene = parent->getScene();
 }
 
@@ -23,14 +21,8 @@ void BaseAnimation::setGraphicBinaryTree(GraphicBinaryTree *newGraphicBinaryTree
 }
 
 
-void BaseAnimation::setRoot(GraphicBinaryTree *graphicBinaryTree) {
-    if (graphicBinaryTree) { _root = graphicBinaryTree->getRoot(); }
-    else { _root = nullptr; }
-}
-
-
 void BaseAnimation::showTree() {
-    renderTree(_root);
+    renderTree(_graphicBinaryTree->getRoot());
 }
 
 

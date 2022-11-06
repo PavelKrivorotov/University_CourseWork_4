@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include "dialogs/confirmdialog.h"
+
 #include "graphics/graphicbinarytree.h"
 
 #include "animations/baseanimation.h"
@@ -8,6 +10,9 @@
 #include "animations/algorithmanimation.h"
 #include "animations/differenceheightanimation.h"
 #include "animations/balancetreeanimation.h"
+
+#include "animations/additemanimation.h"
+#include "animations/removeitemanimation.h"
 
 
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -28,7 +33,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     _graphicBinaryTree->add(12);
     _graphicBinaryTree->add(100);
     _graphicBinaryTree->add(10);
-    _graphicBinaryTree->add(256);
+//    _graphicBinaryTree->add(256);
     _graphicBinaryTree->add(-89);
     _graphicBinaryTree->add(-67);
     _graphicBinaryTree->add(-5);
@@ -40,11 +45,18 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     _graphicBinaryTree->add(-7);
 
 
+//    _graphicBinaryTree->remove(0);
+//    _graphicBinaryTree->add(123);
+
+
     _baseAnimation = new BaseAnimation(this, _graphicBinaryTree);
     _getItemAnimation = new GetItemAnimation(this, _graphicBinaryTree);
     _algorithmAnimation = new AlgorithmAnimation(this, _graphicBinaryTree);
     _differenceHeightAnimation = new DifferenceHeightAnimation(this, _graphicBinaryTree);
     _balanceTreeAnimation = new BalanceTreeAnimation(this, _graphicBinaryTree);
+
+    _addItemAnimation = new AddItemAnimation(this, _graphicBinaryTree);
+    _removeItemAnimation = new RemoveItemAnimation(this, _graphicBinaryTree);
 
 
     connect(ui->getBtn, &QPushButton::clicked, _getDialog, &ConfirmDialog::show);
@@ -74,6 +86,9 @@ MainWindow::~MainWindow() {
     delete _differenceHeightAnimation;
     delete _balanceTreeAnimation;
 
+    delete _addItemAnimation;
+    delete _removeItemAnimation;
+
     delete _scene;
 }
 
@@ -89,16 +104,12 @@ void MainWindow::getItem(int value) {
 
 
 void MainWindow::addItem(int value) {
-    _differenceHeightAnimation->show();
+    _addItemAnimation->show(value);
 }
 
 
 void MainWindow::removeItem(int value) {
-    _balanceTreeAnimation->show();
-
-//    _balanceTreeAnimation->showGraphicDown();
-
-//    _balanceTreeAnimation->showGraphicUp();
+    _removeItemAnimation->show(value);
 }
 
 

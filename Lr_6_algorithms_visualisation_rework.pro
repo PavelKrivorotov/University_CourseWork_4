@@ -15,6 +15,7 @@ SOURCES += \
     animations/baseanimation.cpp \
     animations/differenceheightanimation.cpp \
     animations/getitemanimation.cpp \
+    animations/removeitemanimation.cpp \
     main.cpp \
     mainwindow.cpp \
     dialogs/confirmdialog.cpp \
@@ -29,6 +30,7 @@ HEADERS += \
     animations/baseanimation.h \
     animations/differenceheightanimation.h \
     animations/getitemanimation.h \
+    animations/removeitemanimation.h \
     mainwindow.h \
     dialogs/confirmdialog.h \
     graphics/graphicbinarytree.h \

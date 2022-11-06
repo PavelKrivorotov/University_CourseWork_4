@@ -1,23 +1,20 @@
 #include "balancetreeanimation.h"
 
-#include "mainwindow.h"
 #include "graphics/graphicbinarytree.h"
 
 #include <QTimer>
 
 BalanceTreeAnimation::BalanceTreeAnimation(MainWindow *parent, GraphicBinaryTree *graphicBinaryTree):
-    DifferenceHeightAnimation(parent, graphicBinaryTree) {
-
-    _graphicBinaryTree = graphicBinaryTree;
+    BaseAnimation(parent, graphicBinaryTree) {
 
     //
 
-    setStartGraphicNode(graphicBinaryTree->getRoot());
+//    setStartGraphicNode(graphicBinaryTree->getRoot());
+
+    _startGraphicNode = nullptr;
 
     //
 
-//    _minimalCoordY0 = 0;
-//    _maximalCoordY0 = maximalCoordY0(_startGraphicNode);
 
     setDefaultMinimalCoordY0();
     setDefaultMaximalCoordY0();
@@ -28,7 +25,8 @@ BalanceTreeAnimation::BalanceTreeAnimation(MainWindow *parent, GraphicBinaryTree
     _currentIndexUpBalanceTreeAnimation = 0;
     _listUpBalanceTreeAnimation = new QList<GraphicNode*>;
 
-    _templateList = new QList<GraphicNode*>;
+    _brushPreviousNode = QBrush(QColor(255, 255, 255));
+    _brushCurrentNode = QBrush(QColor(255, 255, 0));
 
     _deltaDownCoordY0 = 10;
     _deltaUpCoordY0 = 10;
@@ -41,15 +39,18 @@ BalanceTreeAnimation::BalanceTreeAnimation(MainWindow *parent, GraphicBinaryTree
 
     connect(_timerDown, &QTimer::timeout, this, &BalanceTreeAnimation::renderDownGraphicNodeAnimation);
     connect(_timerUp, &QTimer::timeout, this, &BalanceTreeAnimation::renderUpGraphicNodeAnimation);
-
-    connect(this, &BalanceTreeAnimation::completeRenderDownGraphicTreeAnimation,
-            this, &BalanceTreeAnimation::secondPart);
 }
 
 
 BalanceTreeAnimation::~BalanceTreeAnimation() {
     delete _timerDown;
     delete _timerUp;
+}
+
+
+void BalanceTreeAnimation::setStartGraphicNode(GraphicNode *newStartGraphicNode) {
+    if (newStartGraphicNode) { _startGraphicNode = newStartGraphicNode; }
+    else { _startGraphicNode = nullptr; }
 }
 
 
@@ -74,56 +75,16 @@ void BalanceTreeAnimation::setTimerUpUpdate(int milliSeconds) {
 
 
 void BalanceTreeAnimation::setDefaultMinimalCoordY0() {
-//    _minimalCoordY0 = minimalCoordY0(_startGraphicNode);
-
     _minimalCoordY0 = _graphicBinaryTree->minimalCoordY0(_startGraphicNode);
 }
 
 
 void BalanceTreeAnimation::setDefaultMaximalCoordY0() {
-//    _maximalCoordY0 = maximalCoordY0(_startGraphicNode);
-
     _maximalCoordY0 = _graphicBinaryTree->maximalCoordY0(_startGraphicNode);
 }
 
 
-void BalanceTreeAnimation::firstPart() {
-    setRoot(_graphicBinaryTree);
-
-    setDefaultMinimalCoordY0();
-    setDefaultMaximalCoordY0();
-
-    buildListDownAnimation(_startGraphicNode);
-    renderDownGraphicTreeAnimation();
-}
-
-
-void BalanceTreeAnimation::secondPart() {
-    _templateList->clear();
-
-    buildTemplateList(_root);
-    rebuildGraphicTree(0, nullptr, 0, _templateList->size());
-
-
-    setStartGraphicNode(_root);
-    buildListUpAnimation(_startGraphicNode);
-    renderUpGraphicTreeAnimation();
-}
-
-
-void BalanceTreeAnimation::thridPart() {
-
-}
-
-
-void BalanceTreeAnimation::show() {
-    firstPart();
-}
-
-
 void BalanceTreeAnimation::showGraphicDown() {
-    setRoot(_graphicBinaryTree);
-
     setDefaultMinimalCoordY0();
     setDefaultMaximalCoordY0();
 
@@ -133,18 +94,6 @@ void BalanceTreeAnimation::showGraphicDown() {
 
 
 void BalanceTreeAnimation::showGraphicUp() {
-    setRoot(_graphicBinaryTree);
-
-    setDefaultMinimalCoordY0();
-    setDefaultMaximalCoordY0();
-
-    _templateList->clear();
-
-    buildTemplateList(_root);
-    rebuildGraphicTree(0, nullptr, 0, _templateList->size());
-
-
-    setStartGraphicNode(_root);
     buildListUpAnimation(_startGraphicNode);
     renderUpGraphicTreeAnimation();
 }
@@ -160,115 +109,15 @@ void BalanceTreeAnimation::buildListDownAnimation(GraphicNode *currentGraphicNod
 }
 
 
-void BalanceTreeAnimation::buildTemplateList(GraphicNode *currentGraphicNode) {
-    if (!currentGraphicNode) { return; }
-
-    buildTemplateList(currentGraphicNode->getLeftChild());
-
-    _templateList->append(currentGraphicNode);
-
-    buildTemplateList(currentGraphicNode->getRightChild());
-}
-
-
 void BalanceTreeAnimation::buildListUpAnimation(GraphicNode *currentGraphicNode) {
     if (!currentGraphicNode) { return; }
+
+    currentGraphicNode->setCoordY0(_maximalCoordY0);
 
     _listUpBalanceTreeAnimation->append(currentGraphicNode);
 
     buildListUpAnimation(currentGraphicNode->getLeftChild());
     buildListUpAnimation(currentGraphicNode->getRightChild());
-}
-
-
-void BalanceTreeAnimation::rebuildGraphicTree(int state, GraphicNode *parentGraphicNode, int startIndex, int stopIndex) {
-    if (!(stopIndex - startIndex)) { return; }
-
-    int currentIndex = (startIndex + stopIndex) / 2;
-
-    GraphicNode *currentGraphicNode = _templateList->value(currentIndex);
-    currentGraphicNode->setLeftChild(nullptr);
-    currentGraphicNode->setRightChild(nullptr);
-
-    // Test
-//    currentGraphicNode->setBalanceCoordinate(true);
-//    currentGraphicNode->setDrawLine(true);
-
-    currentGraphicNode->setBalanceCoordinate(false);
-    currentGraphicNode->setDrawLine(false);
-
-
-    switch (state) {
-        case 0:
-            currentGraphicNode->setParent(nullptr);
-            currentGraphicNode->setCoordX0(_graphicBinaryTree->getRootCoordX0());
-            currentGraphicNode->setCoordY0(_graphicBinaryTree->getRootCoordY0());
-            currentGraphicNode->setAngle(_graphicBinaryTree->getStartAngle());
-            currentGraphicNode->setLengthLine(_graphicBinaryTree->getStartLengthLine());
-            currentGraphicNode->setIndex(0);
-            currentGraphicNode->setMinimalHeight(0);
-            currentGraphicNode->setMaximalHeight(0);
-
-            _root = currentGraphicNode;
-
-            // Set new root in GraphicBinaryTree _root
-             _graphicBinaryTree->setRoot(currentGraphicNode);
-            break;
-
-        case -1:
-            parentGraphicNode->setLeftChild(currentGraphicNode);
-
-            currentGraphicNode->setParent(parentGraphicNode);
-            currentGraphicNode->setIndex(parentGraphicNode->getIndex() + 1);
-
-
-//            qDebug() << "By Parent: X0 =" << parentGraphicNode->getCoordLeftChildX0()
-//                     << ". Y0 =" << parentGraphicNode->getCoordLeftChildY0();
-
-
-            currentGraphicNode->setCoordX0(parentGraphicNode->getCoordLeftChildX0());
-//            currentGraphicNode->setCoordY0(parentGraphicNode->getCoordLeftChildY0());
-
-//            currentGraphicNode->makeBalanceCoordinate();
-            break;
-
-        case 1:
-            parentGraphicNode->setRightChild(currentGraphicNode);
-
-            currentGraphicNode->setParent(parentGraphicNode);
-            currentGraphicNode->setIndex(parentGraphicNode->getIndex() + 1);
-
-
-//            qDebug() << "By Parent: X0 =" << parentGraphicNode->getCoordRightChildX0()
-//                     << ". Y0 =" << parentGraphicNode->getCoordRightChildY0();
-
-
-            currentGraphicNode->setCoordX0(parentGraphicNode->getCoordRightChildX0());
-//            currentGraphicNode->setCoordY0(parentGraphicNode->getCoordRightChildY0());
-
-//            currentGraphicNode->makeBalanceCoordinate();
-            break;
-
-        default:
-            break;
-    }
-
-    currentGraphicNode->setCoordY0(_maximalCoordY0);
-
-//    balanceHeight(currentGraphicNode);
-
-    _graphicBinaryTree->balanceHeight(currentGraphicNode);
-
-
-//    qDebug() << "Index =" << currentIndex << ". Current Node:" << currentGraphicNode->getValue()
-//             << ". X0 =" << currentGraphicNode->getCoordX0()
-//             << ". Y0 =" << currentGraphicNode->getCoordY0()
-//             << ". Angle =" << currentGraphicNode->getAngle()
-//             << ". LEngth Line =" << currentGraphicNode->getLengthLine() << "\n";
-
-
-    rebuildGraphicTree(-1, currentGraphicNode, startIndex, currentIndex);
-    rebuildGraphicTree(1, currentGraphicNode, currentIndex + 1, stopIndex);
 }
 
 
@@ -314,7 +163,7 @@ void BalanceTreeAnimation::renderDownGraphicNodeAnimation() {
 
     if (startCoordY0 > endCoordY0) {
         currentGraphicNode->setCoordY0(endCoordY0);
-        currentGraphicNode->setBrush(QBrush(QColor(255, 255, 255)));
+        currentGraphicNode->setBrush(_brushPreviousNode);
 
         _currentScene->update();
 
@@ -322,14 +171,12 @@ void BalanceTreeAnimation::renderDownGraphicNodeAnimation() {
 
         _timerDown->stop();
 
-        completeRenderDownGraphicNodeAnimation();
-
         renderDownGraphicTreeAnimation();
         return;
     }
 
     currentGraphicNode->setCoordY0(startCoordY0);
-    currentGraphicNode->setBrush(QBrush(QColor(255, 255, 0)));
+    currentGraphicNode->setBrush(_brushCurrentNode);
 
     _currentScene->update();
 }
@@ -350,7 +197,7 @@ void BalanceTreeAnimation::renderUpGraphicNodeAnimation() {
 
     if (startCoordY0 < endCoordY0) {
         currentGraphicNode->setCoordY0(endCoordY0);
-        currentGraphicNode->setBrush(QBrush(QColor(255, 255, 255)));
+        currentGraphicNode->setBrush(_brushPreviousNode);
 
         currentGraphicNode->setDrawLine(true);
         currentGraphicNode->setBalanceCoordinate(true);
@@ -361,14 +208,12 @@ void BalanceTreeAnimation::renderUpGraphicNodeAnimation() {
 
         _timerUp->stop();
 
-        completeRenderUpGraphicNodeAnimation();
-
         renderUpGraphicTreeAnimation();
         return;
     }
 
     currentGraphicNode->setCoordY0(startCoordY0);
-    currentGraphicNode->setBrush(QBrush(QColor(255, 255, 0)));
+    currentGraphicNode->setBrush(_brushCurrentNode);
 
     _currentScene->update();
 }

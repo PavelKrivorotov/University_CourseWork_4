@@ -1,15 +1,17 @@
 #ifndef BALANCETREEANIMATION_H
 #define BALANCETREEANIMATION_H
 
-#include "animations/differenceheightanimation.h"
+#include "animations/baseanimation.h"
 
 
-class BalanceTreeAnimation: public DifferenceHeightAnimation {
+class BalanceTreeAnimation: public BaseAnimation {
     Q_OBJECT
 
 public:
     BalanceTreeAnimation(MainWindow *parent, GraphicBinaryTree *graphicBinaryTree);
     ~BalanceTreeAnimation();
+
+    void setStartGraphicNode(GraphicNode *newStartGraphicNode = nullptr);
 
     void setDeltaDownCoordY0(int newDeltaDownCoordY0);
 
@@ -24,20 +26,10 @@ private:
 
     void setDefaultMaximalCoordY0();
 
-    void firstPart();
-
-    void secondPart();
-
-    void thridPart();
-
 protected:
     void buildListDownAnimation(GraphicNode *currentGraphicNode);
 
-    void buildTemplateList(GraphicNode *currentGraphicNode);
-
     void buildListUpAnimation(GraphicNode *currentGraphicNode);
-
-    void rebuildGraphicTree(int state, GraphicNode *parentGraphicNode, int startIndex, int stopIndex);
 
     void renderDownGraphicTreeAnimation();
 
@@ -48,6 +40,8 @@ protected:
     void renderUpGraphicNodeAnimation();
 
 private:
+    GraphicNode *_startGraphicNode;
+
     int _minimalCoordY0;
     int _maximalCoordY0;
 
@@ -57,10 +51,11 @@ private:
     int _currentIndexUpBalanceTreeAnimation;
     QList<GraphicNode*> *_listUpBalanceTreeAnimation;
 
-    QList<GraphicNode*> *_templateList;
-
     int _deltaDownCoordY0;
     int _deltaUpCoordY0;
+
+    QBrush _brushPreviousNode;
+    QBrush _brushCurrentNode;
 
     int _timerDownUpdate;
     QTimer *_timerDown;
@@ -69,8 +64,6 @@ private:
     QTimer *_timerUp;
 
 public slots:
-    virtual void show() override;
-
     void showGraphicDown();
 
     void showGraphicUp();
@@ -79,10 +72,6 @@ signals:
     void completeRenderDownGraphicTreeAnimation();
 
     void completeRenderUpGraphicTreeAnimation();
-
-    void completeRenderDownGraphicNodeAnimation();
-
-    void completeRenderUpGraphicNodeAnimation();
 };
 
 #endif // BALANCETREEANIMATION_H

@@ -10,11 +10,15 @@ GraphicBinaryTree::GraphicBinaryTree() {
 
     _startAngle = 15;
     _startLengthLine = 256;
+
+    _templateList = new QList<GraphicNode(*)>;
 }
 
 
 GraphicBinaryTree::~GraphicBinaryTree() {
-    deleteGraphBinaryTree(_root);
+    deleteTree(_root);
+
+    delete _templateList;
 }
 
 
@@ -35,7 +39,7 @@ GraphicNode * GraphicBinaryTree::get(int value) {
 }
 
 
-void GraphicBinaryTree::add(int value) {
+GraphicNode * GraphicBinaryTree::add(int value) {
     if (!_root) {
         GraphicNode *rootGraphicNode = new GraphicNode(value, nullptr, false, true);
         rootGraphicNode->setCoordX0(_rootCoordX0);
@@ -43,11 +47,8 @@ void GraphicBinaryTree::add(int value) {
         rootGraphicNode->setAngle(_startAngle);
         rootGraphicNode->setLengthLine(_startLengthLine);
 
-//        qDebug() << "Node:" << rootGraphicNode->getValue() << ". X0 =" << rootGraphicNode->getCoordX0()
-//                 << ". Y0 =" << rootGraphicNode->getCoordY0();
-
         _root = rootGraphicNode;
-        return;
+        return rootGraphicNode;
     }
 
     GraphicNode *previousGraphicNode = nullptr;
@@ -78,15 +79,38 @@ void GraphicBinaryTree::add(int value) {
 
     newGraphicNode->makeBalanceCoordinate();
 
-//    qDebug() << "Node:" << newGraphicNode->getValue() << ". X0 =" << newGraphicNode->getCoordX0()
-//             << ". Y0 =" << newGraphicNode->getCoordY0();
-
     balanceHeight(_root);
+
+    return newGraphicNode;
 }
 
 
 void GraphicBinaryTree::remove(int value) {
+    GraphicNode *removeGraphicNode = get(value);
 
+    if (!removeGraphicNode) { return; }
+
+    GraphicNode *parentGraphicNode = removeGraphicNode->getParent();
+    int state;
+
+    if (!parentGraphicNode) { state = 0; }
+    else if (removeGraphicNode == parentGraphicNode->getLeftChild()) { state = -1; }
+    else { state = 1; }
+
+
+    if (!removeGraphicNode->getLeftChild() && !removeGraphicNode->getRightChild()) {
+        if (!state) { _root = nullptr; }
+        else if (state == -1) { parentGraphicNode->setLeftChild(nullptr); }
+        else { parentGraphicNode->setRightChild(nullptr); }
+    }
+
+    else{
+        balanceTree(state, removeGraphicNode, true);
+    }
+
+    balanceHeight(_root);
+
+    delete removeGraphicNode;
 }
 
 
@@ -149,6 +173,13 @@ double GraphicBinaryTree::maximalCoordY0(GraphicNode *currentGraphicNode) {
 }
 
 
+int GraphicBinaryTree::differenceHeight(GraphicNode *currentGraphicNode) {
+    if (!currentGraphicNode) { return 0; }
+
+    return (_root->getMaximalHeight() - _root->getMinimalHeight());
+}
+
+
 GraphicNode * GraphicBinaryTree::getRoot() {
     return _root;
 }
@@ -171,6 +202,11 @@ double GraphicBinaryTree::getStartAngle() {
 
 double GraphicBinaryTree::getStartLengthLine() {
     return _startLengthLine;
+}
+
+
+int GraphicBinaryTree::getLengthTemplateList() {
+    return _templateList->size();
 }
 
 
@@ -244,7 +280,80 @@ void GraphicBinaryTree::balanceHeight(GraphicNode *currentGraphicNode) {
 }
 
 
-void GraphicBinaryTree::deleteGraphBinaryTree(GraphicNode *currentGraphicNode) {
+void GraphicBinaryTree::balanceTree(int state, GraphicNode *currentGraphicNode, bool removeNode) {
+    _templateList->clear();
+
+    buildTemplateList(currentGraphicNode, removeNode);
+
+    rebuildTree(state, currentGraphicNode->getParent(), 0, _templateList->size());
+}
+
+
+void GraphicBinaryTree::buildTemplateList(GraphicNode *currentGraphicNode, bool removeNode) {
+    if (!currentGraphicNode) { return; }
+
+    buildTemplateList(currentGraphicNode->getLeftChild());
+
+    if (!removeNode) { _templateList->append(currentGraphicNode); }
+
+    buildTemplateList(currentGraphicNode->getRightChild());
+}
+
+
+void GraphicBinaryTree::rebuildTree(int state, GraphicNode *parentGraphicNode, int startIndex, int stopIndex) {
+    if (!(stopIndex - startIndex)) { return; }
+
+    int currentIndex = (startIndex + stopIndex) / 2;
+
+    GraphicNode *currentGraphicNode = _templateList->value(currentIndex);
+    currentGraphicNode->setLeftChild(nullptr);
+    currentGraphicNode->setRightChild(nullptr);
+
+    currentGraphicNode->setBalanceCoordinate(false);
+    currentGraphicNode->setDrawLine(false);
+
+    switch (state) {
+        case 0:
+            currentGraphicNode->setParent(nullptr);
+            currentGraphicNode->setCoordX0(_rootCoordX0);
+            currentGraphicNode->setCoordY0(_rootCoordY0);
+            currentGraphicNode->setAngle(_startAngle);
+            currentGraphicNode->setLengthLine(_startLengthLine);
+            currentGraphicNode->setIndex(0);
+            currentGraphicNode->setMinimalHeight(0);
+            currentGraphicNode->setMaximalHeight(0);
+
+            _root = currentGraphicNode;
+            break;
+
+        case -1:
+            parentGraphicNode->setLeftChild(currentGraphicNode);
+
+            currentGraphicNode->setParent(parentGraphicNode);
+            currentGraphicNode->setIndex(parentGraphicNode->getIndex() + 1);
+
+            currentGraphicNode->setCoordX0(parentGraphicNode->getCoordLeftChildX0());
+            break;
+
+        case 1:
+            parentGraphicNode->setRightChild(currentGraphicNode);
+
+            currentGraphicNode->setParent(parentGraphicNode);
+            currentGraphicNode->setIndex(parentGraphicNode->getIndex() + 1);
+
+            currentGraphicNode->setCoordX0(parentGraphicNode->getCoordRightChildX0());
+            break;
+
+        default:
+            break;
+    }
+
+    rebuildTree(-1, currentGraphicNode, startIndex, currentIndex);
+    rebuildTree(1, currentGraphicNode, currentIndex + 1, stopIndex);
+}
+
+
+void GraphicBinaryTree::deleteTree(GraphicNode *currentGraphicNode) {
     if (!currentGraphicNode) { return; }
 
     if (currentGraphicNode == _root) {
@@ -253,10 +362,8 @@ void GraphicBinaryTree::deleteGraphBinaryTree(GraphicNode *currentGraphicNode) {
         return;
     }
 
-    deleteGraphBinaryTree(currentGraphicNode->getLeftChild());
-    deleteGraphBinaryTree(currentGraphicNode->getRightChild());
-
-    qDebug() << currentGraphicNode->getValue() << "\n";
+    deleteTree(currentGraphicNode->getLeftChild());
+    deleteTree(currentGraphicNode->getRightChild());
 
     delete currentGraphicNode;
 }

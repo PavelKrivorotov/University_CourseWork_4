@@ -25,6 +25,8 @@ protected:
     void renderGetAnimation();
 
 private:
+    int _detectedValue;
+
     int _currentIndexListGetAnimation;
     QList<GraphicNode*> *_listGetAnimation;
 
@@ -39,7 +41,7 @@ public slots:
     virtual void show(int value);
 
 signals:
-    void completeRenderGetAnimation();
+    void completeRenderGetAnimation(bool itemExists, int value);
 };
 
 #endif // GETITEMANIMATION_H

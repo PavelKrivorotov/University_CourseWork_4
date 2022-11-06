@@ -12,7 +12,7 @@ public:
 
     GraphicNode * get(int value);
 
-    void add(int value);
+    GraphicNode * add(int value);
 
     void remove(int value);
 
@@ -24,6 +24,8 @@ public:
 
     double maximalCoordY0(GraphicNode *currentGraphicNode);
 
+    int differenceHeight(GraphicNode *currentGraphicNode);
+
     GraphicNode * getRoot();
 
     int getRootCoordX0();
@@ -33,6 +35,8 @@ public:
     double getStartAngle();
 
     double getStartLengthLine();
+
+    int getLengthTemplateList();
 
     void setRoot(GraphicNode *newRoot);
 
@@ -47,11 +51,15 @@ public:
 
     void balanceHeight(GraphicNode *currentGraphicNode);
 
-private:
-    void deleteGraphBinaryTree(GraphicNode *currentGraphicNode);
 
-//protected:
-//    void balanceHeight(GraphicNode *currentGraphicNode);
+    void balanceTree(int state, GraphicNode *currentGraphicNode, bool removeNode = false);
+
+private:
+    void buildTemplateList(GraphicNode *currentGraphicNode, bool removeNode = false);
+
+    void rebuildTree(int state, GraphicNode *parentGraphicNode, int startIndex, int stopIndex);
+
+    void deleteTree(GraphicNode *currentGraphicNode);
 
 private:
     GraphicNode *_root;
@@ -61,6 +69,8 @@ private:
 
     double _startAngle;
     double _startLengthLine;
+
+    QList<GraphicNode*> *_templateList;
 };
 
 #endif // GRAPHICBINARYTREE_H

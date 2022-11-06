@@ -1,14 +1,13 @@
 #include "getitemanimation.h"
 
-#include "mainwindow.h"
-#include "graphics/graphicnode.h"
+#include "graphics/graphicbinarytree.h"
 
 #include <QTimer>
 
 GetItemAnimation::GetItemAnimation(MainWindow *parent, GraphicBinaryTree *graphicBinaryTree):
     BaseAnimation(parent, graphicBinaryTree) {
 
-    _graphicBinaryTree = graphicBinaryTree;
+    _detectedValue = 0;
 
     _currentIndexListGetAnimation = 0;
     _listGetAnimation = new QList<GraphicNode*>;
@@ -54,7 +53,8 @@ void GetItemAnimation::setTimerUpdate(int milliSeconds) {
 
 
 void GetItemAnimation::show(int value) {
-    setRoot(_graphicBinaryTree);
+    _detectedValue = value;
+
     buildListGetAnimation(value);
 
     _timer->start(_timerUpdate);
@@ -62,7 +62,7 @@ void GetItemAnimation::show(int value) {
 
 
 void GetItemAnimation::buildListGetAnimation(int value) {
-    GraphicNode *currentGraphicNode = _root;
+    GraphicNode *currentGraphicNode = _graphicBinaryTree->getRoot();
 
     _listGetAnimation->clear();
     _currentIndexListGetAnimation = 0;
@@ -109,11 +109,14 @@ void GetItemAnimation::renderGetAnimation() {
 
     _currentScene->update();
 
+
+    if (_listGetAnimation->last()) { completeRenderGetAnimation(true, _detectedValue); }
+    else { completeRenderGetAnimation(false, _detectedValue); }
+
+
     _listGetAnimation->clear();
     _currentIndexListGetAnimation = 0;
 
     _timer->stop();
-
-    completeRenderGetAnimation();
 }
 

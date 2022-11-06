@@ -1,14 +1,13 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "dialogs/confirmdialog.h"
-
 #include <QMainWindow>
-#include <QGraphicsScene>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
+
+class ConfirmDialog;
 
 class BaseAnimation;
 class GraphicBinaryTree;
@@ -17,6 +16,10 @@ class AlgorithmAnimation;
 class DifferenceHeightAnimation;
 class BalanceTreeAnimation;
 
+class AddItemAnimation;
+class RemoveItemAnimation;
+
+class QGraphicsScene;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -41,6 +44,9 @@ private:
     AlgorithmAnimation *_algorithmAnimation;
     DifferenceHeightAnimation *_differenceHeightAnimation;
     BalanceTreeAnimation *_balanceTreeAnimation;
+
+    AddItemAnimation *_addItemAnimation;
+    RemoveItemAnimation *_removeItemAnimation;
 
 private slots:
     void getItem(int value);

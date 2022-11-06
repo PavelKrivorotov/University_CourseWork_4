@@ -1,6 +1,5 @@
 #include "differenceheightanimation.h"
 
-#include "mainwindow.h"
 #include "graphics/graphicbinarytree.h"
 
 #include <QTimer>
@@ -8,16 +7,14 @@
 DifferenceHeightAnimation::DifferenceHeightAnimation(MainWindow *parent, GraphicBinaryTree *graphicBinaryTree):
     BaseAnimation(parent, graphicBinaryTree) {
 
-    _graphicBinaryTree = graphicBinaryTree;
+    //
+
+//    setStartGraphicNode(graphicBinaryTree->getRoot());
+
+    _startGraphicNode = nullptr;
 
     //
 
-    setStartGraphicNode(graphicBinaryTree->getRoot());
-
-    //
-
-//    _minimalIndex = minimalIndex(_startGraphicNode);
-//    _maximalIndex = maximalIndex(_startGraphicNode);
 
     setDefaultMinimalIndex();
     setDefaultMaximalIndex();
@@ -25,6 +22,7 @@ DifferenceHeightAnimation::DifferenceHeightAnimation(MainWindow *parent, Graphic
     _currentIndexDifferenceHeightAnimation = 0;
     _listDifferenceHeightAnimation = new QList<GraphicNode*>;
 
+    _brushStartGraphicNode = QBrush(QColor(48, 213, 200));
     _brushPreviousGraphicNode = QBrush(QColor(255, 255, 255));
     _brushHighLevelNode = QBrush(QColor(0, 255, 0));
     _brushMiddleLevelNode = QBrush(QColor(255, 255, 0));
@@ -42,21 +40,9 @@ DifferenceHeightAnimation::~DifferenceHeightAnimation() {
 }
 
 
-void DifferenceHeightAnimation::setRoot(GraphicBinaryTree *graphicBinaryTree) {
-    if (graphicBinaryTree) { _root = graphicBinaryTree->getRoot(); }
-    else { _root = nullptr; }
-
-    setStartGraphicNode();
-}
-
-
 void DifferenceHeightAnimation::setStartGraphicNode(GraphicNode *newStartGraphicNode) {
-    if (!newStartGraphicNode) {
-        if (_graphicBinaryTree) { _startGraphicNode = _graphicBinaryTree->getRoot(); }
-        else { _startGraphicNode = nullptr; }
-    }
-
-    else { _startGraphicNode = newStartGraphicNode; }
+    if (newStartGraphicNode) { _startGraphicNode = newStartGraphicNode; }
+    else { _startGraphicNode = nullptr; }
 }
 
 
@@ -88,22 +74,16 @@ void DifferenceHeightAnimation::setTimerUpdate(int milliSeconds) {
 
 
 void DifferenceHeightAnimation::setDefaultMinimalIndex() {
-//    _minimalIndex = minimalIndex(_startGraphicNode);
-
     _minimalIndex = _graphicBinaryTree->minimalIndex(_startGraphicNode);
 }
 
 
 void DifferenceHeightAnimation::setDefaultMaximalIndex() {
-//    _maximalIndex = maximalIndex(_startGraphicNode);
-
     _maximalIndex = _graphicBinaryTree->maximalIndex(_startGraphicNode);
 }
 
 
 void DifferenceHeightAnimation::show() {
-    setRoot(_graphicBinaryTree);
-
     setDefaultMinimalIndex();
     setDefaultMaximalIndex();
 
@@ -129,6 +109,8 @@ void DifferenceHeightAnimation::buildListDifferenceHeightAnimation(GraphicNode *
 
 
 void DifferenceHeightAnimation::renderDifferenceHeightAnimation() {
+    if (_startGraphicNode) { _startGraphicNode->setBrush(_brushStartGraphicNode); }
+
     if (_currentIndexDifferenceHeightAnimation < _listDifferenceHeightAnimation->size()) {
         GraphicNode *currentGraphicNode = _listDifferenceHeightAnimation->value(_currentIndexDifferenceHeightAnimation);
 
@@ -172,8 +154,14 @@ void DifferenceHeightAnimation::renderDifferenceHeightAnimation() {
     _currentIndexDifferenceHeightAnimation = 0;
     _listDifferenceHeightAnimation->clear();
 
+    if (_startGraphicNode) { _startGraphicNode->setBrush(_brushPreviousGraphicNode); }
+
     _timer->stop();
 
-    completeDifferenceHeightAnimation();
+
+    GraphicNode *rootGraphicNode = _graphicBinaryTree->getRoot();
+
+    if (_graphicBinaryTree->differenceHeight(rootGraphicNode) < 2) { completeDifferenceHeightAnimation(false); }
+    else { completeDifferenceHeightAnimation(true); };
 }
 

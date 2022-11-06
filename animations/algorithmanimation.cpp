@@ -1,14 +1,11 @@
 #include "algorithmanimation.h"
 
-#include "mainwindow.h"
-#include "graphics/graphicnode.h"
+#include "graphics/graphicbinarytree.h"
 
 #include <QTimer>
 
 AlgorithmAnimation::AlgorithmAnimation(MainWindow *parent, GraphicBinaryTree *graphicBinaryTree):
     BaseAnimation(parent, graphicBinaryTree) {
-
-    _graphicBinaryTree = graphicBinaryTree;
 
     _currentIndexAlgorithmAnimation = 0;
     _listAlgorithmAnimation = new QList<GraphicNode*>;
@@ -58,7 +55,6 @@ void AlgorithmAnimation::setTimerUpdate(int milliSeconds) {
 
 
 void AlgorithmAnimation::show() {
-    setRoot(_graphicBinaryTree);
     buildListElements();
 
     _timer->start(_timerUpdate);
@@ -69,16 +65,18 @@ void AlgorithmAnimation::buildListElements() {
     _listAlgorithmAnimation->clear();
     _currentIndexAlgorithmAnimation = 0;
 
-    if (!_root) { return; }
+    GraphicNode *root = _graphicBinaryTree->getRoot();
+
+    if (!root) { return; }
 
     QList<GraphicNode*> *queue1, *queue2, *currentQueue, *waitingQueue;
     queue1 = new QList<GraphicNode*>;
     queue2 = new QList<GraphicNode*>;
 
-    _listAlgorithmAnimation->append(_root);
+    _listAlgorithmAnimation->append(root);
 
-    GraphicNode *graphicNodeLeft = _root->getLeftChild();
-    GraphicNode *graphicNodeRight = _root->getRightChild();
+    GraphicNode *graphicNodeLeft = root->getLeftChild();
+    GraphicNode *graphicNodeRight = root->getRightChild();
 
     if (graphicNodeLeft) { queue1->append(graphicNodeLeft); }
     if (graphicNodeRight) { queue1->append(graphicNodeRight); }
